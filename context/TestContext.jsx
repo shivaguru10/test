@@ -10,6 +10,7 @@ export function TestProvider({ children }) {
 
     // 2. Initialization state (Camera / Pre-start)
     const [hasStarted, setHasStarted] = useState(false);
+    const [isRestored, setIsRestored] = useState(false); // New state to track if we've loaded from localStorage
 
     // 3. Question / Editor State
     const [activeQuestionId, setActiveQuestionId] = useState(questions[0].id);
@@ -23,6 +24,30 @@ export function TestProvider({ children }) {
 
     // 4. Message State
     const [messageContent, setMessageContent] = useState("");
+
+    // Load from localStorage on mount (client-side only to avoid hydration mismatch)
+    useEffect(() => {
+        const savedTime = localStorage.getItem('hr_timeLeft');
+        const savedCode = localStorage.getItem('hr_editorCodes');
+        const savedQuestion = localStorage.getItem('hr_activeQuestionId');
+        const savedMessage = localStorage.getItem('hr_messageContent');
+
+        if (savedTime) setTimeLeft(parseInt(savedTime, 10));
+        if (savedCode) setEditorCodes(JSON.parse(savedCode));
+        if (savedQuestion) setActiveQuestionId(parseInt(savedQuestion, 10));
+        if (savedMessage) setMessageContent(savedMessage);
+
+        setIsRestored(true);
+    }, []);
+
+    // Save to localStorage whenever state changes (only after initial load has finished)
+    useEffect(() => {
+        if (!isRestored) return;
+        localStorage.setItem('hr_timeLeft', timeLeft.toString());
+        localStorage.setItem('hr_editorCodes', JSON.stringify(editorCodes));
+        localStorage.setItem('hr_activeQuestionId', activeQuestionId.toString());
+        localStorage.setItem('hr_messageContent', messageContent);
+    }, [timeLeft, editorCodes, activeQuestionId, messageContent, isRestored]);
 
     // Update code for a specific question
     const updateEditorCode = (questionId, newCode) => {
