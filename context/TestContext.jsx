@@ -31,11 +31,13 @@ export function TestProvider({ children }) {
         const savedCode = localStorage.getItem('hr_editorCodes');
         const savedQuestion = localStorage.getItem('hr_activeQuestionId');
         const savedMessage = localStorage.getItem('hr_messageContent');
+        const savedStarted = localStorage.getItem('hr_hasStarted');
 
         if (savedTime) setTimeLeft(parseInt(savedTime, 10));
         if (savedCode) setEditorCodes(JSON.parse(savedCode));
         if (savedQuestion) setActiveQuestionId(parseInt(savedQuestion, 10));
         if (savedMessage) setMessageContent(savedMessage);
+        if (savedStarted === 'true') setHasStarted(true);
 
         setIsRestored(true);
     }, []);
@@ -47,7 +49,8 @@ export function TestProvider({ children }) {
         localStorage.setItem('hr_editorCodes', JSON.stringify(editorCodes));
         localStorage.setItem('hr_activeQuestionId', activeQuestionId.toString());
         localStorage.setItem('hr_messageContent', messageContent);
-    }, [timeLeft, editorCodes, activeQuestionId, messageContent, isRestored]);
+        localStorage.setItem('hr_hasStarted', hasStarted.toString());
+    }, [timeLeft, editorCodes, activeQuestionId, messageContent, hasStarted, isRestored]);
 
     // Update code for a specific question
     const updateEditorCode = (questionId, newCode) => {
@@ -103,7 +106,8 @@ export function TestProvider({ children }) {
                 updateEditorCode,
                 questions,
                 messageContent,
-                setMessageContent
+                setMessageContent,
+                isRestored
             }}
         >
             {children}

@@ -8,9 +8,14 @@ import Footer from "../components/Footer";
 import { useTest } from "../context/TestContext";
 
 export default function Home() {
-    const { hasStarted, activeQuestionId, setActiveQuestionId, questions } = useTest();
+    const { hasStarted, activeQuestionId, setActiveQuestionId, questions, isRestored } = useTest();
 
     const activeQuestion = questions.find(q => q.id === activeQuestionId) || questions[0];
+
+    // Prevent hydration flicker by waiting for localStorage restore
+    if (!isRestored) {
+        return null;
+    }
 
     // Pre-start screen
     if (!hasStarted) {
