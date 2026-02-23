@@ -74,7 +74,8 @@ export function TestProvider({ children }) {
 
     // Handle Initialization
     useEffect(() => {
-        if (hasStarted) return;
+        if (!isRestored) return; // Wait for localStorage to load first
+        if (hasStarted) return; // If test already started (from previous session), don't ask for camera again
 
         const initializeTest = async () => {
             try {
@@ -93,7 +94,7 @@ export function TestProvider({ children }) {
         } else {
             setHasStarted(true);
         }
-    }, [hasStarted]);
+    }, [hasStarted, isRestored]);
 
     return (
         <TestContext.Provider
