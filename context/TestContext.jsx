@@ -75,26 +75,24 @@ export function TestProvider({ children }) {
     // Handle Initialization
     useEffect(() => {
         if (!isRestored) return; // Wait for localStorage to load first
-        if (hasStarted) return; // If test already started (from previous session), don't ask for camera again
+        if (window.hasInitializedTest) return; // Prevent double-initialization in Strict Mode
+        window.hasInitializedTest = true;
 
         const initializeTest = async () => {
             try {
+                // Always try to spin up the camera for proctoring on page load.
                 const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
                 window.activeProctorStream = stream;
             } catch (err) {
                 console.warn("Camera access denied or unavailable, proceeding to test anyway.");
             } finally {
+                // Once camera triggers (or fails), allow test UI to render if not already
                 setHasStarted(true);
             }
         };
 
-        if (!window.hasInitializedTest) {
-            window.hasInitializedTest = true;
-            initializeTest();
-        } else {
-            setHasStarted(true);
-        }
-    }, [hasStarted, isRestored]);
+        initializeTest();
+    }, [isRestored]);
 
     return (
         <TestContext.Provider
