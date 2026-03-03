@@ -31,8 +31,29 @@ export default function QuestionPanel({ question }) {
     };
 
     return (
-        <div className="flex-1 w-1/2 md:w-[40%] border-r border-[#d8dee2] dark:border-[#2a323d] bg-[#f3f7f7] dark:bg-[#0d0d0d] overflow-y-auto p-6 md:p-8 shrink-0 transition-colors custom-scrollbar">
-            <div className="max-w-prose text-[14px] leading-relaxed">
+        <div className="flex-1 relative w-1/2 md:w-[40%] border-r border-[#d8dee2] dark:border-[#2a323d] bg-[#f3f7f7] dark:bg-[#0d0d0d] overflow-y-auto p-6 md:p-8 shrink-0 transition-colors custom-scrollbar">
+
+            {/* Background Watermark Pattern */}
+            <div
+                className="absolute inset-[-50%] pointer-events-none opacity-[0.04] dark:opacity-[0.05] select-none z-0 transform -rotate-[25deg] flex flex-col justify-center gap-[100px]"
+                style={{ width: '200%', height: '200%' }}
+            >
+                {Array.from({ length: 12 }).map((_, rowIdx) => (
+                    <div
+                        key={rowIdx}
+                        className="flex gap-16 justify-center"
+                        style={{ marginLeft: rowIdx % 2 === 0 ? '0' : '-100px' }}
+                    >
+                        {Array.from({ length: 12 }).map((_, colIdx) => (
+                            <span key={colIdx} className="text-xl font-bold text-[#908F8F] shrink-0 whitespace-nowrap">
+                                HackerRank Confidential
+                            </span>
+                        ))}
+                    </div>
+                ))}
+            </div>
+
+            <div className="max-w-prose relative z-10 text-[14px] leading-relaxed">
                 <h1 className="text-2xl font-bold mb-4 flex items-center gap-3 text-gray-900 dark:text-white">
                     <Bookmark size={24} className="text-gray-500 dark:text-gray-400" />
                     {question.title}

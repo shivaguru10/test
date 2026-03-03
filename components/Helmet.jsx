@@ -28,8 +28,8 @@ export default function Helmet() {
             style={{ height: '30px' }}
         >
             <div className="flex items-center gap-4 text-[20px] font-medium">
-                <Wifi size={20} className="text-[#22c55e]" strokeWidth={3} title="Connection Stable" />
-                <span className="text-gray-500 dark:text-gray-400 leading-none">{realTime || '--:--'}</span>
+                <Wifi size={20} className="text-white" strokeWidth={3} title="Connection Stable" />
+                <span className="text-gray-400 dark:text-gray-400 leading-none">{realTime || '--:--'}</span>
             </div>
         </div>
     );

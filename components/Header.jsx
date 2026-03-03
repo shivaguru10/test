@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { useTheme } from "../context/ThemeContext";
 import { useTest } from "../context/TestContext";
 import { Layout, Sun, Moon, HelpCircle, Clock, Wifi } from "lucide-react";
+import IBMLogo from "./IBMLogo";
 
 export default function Header() {
     const { theme, toggleTheme } = useTheme();
@@ -37,19 +38,22 @@ export default function Header() {
     return (
         <header className="flex items-center justify-between pl-4 pr-2 min-h-[60px] bg-white dark:bg-[#0d0d0d] border-b border-hr-border shrink-0 py-2">
             {/* Timer / Left Area */}
-            <div
-                className="flex items-center gap-1.5 cursor-pointer"
-                style={{
-                    backgroundColor: '#033a15',          // darker green
-                    borderRadius: '20px',                // pill shape
-                    padding: '2px 8px',                  // slight increase horizontally
-                    fontSize: '11px',                    // smaller text
-                    color: '#62ff7d',                    // softer green text
-                    boxShadow: '0 0 6px rgba(0, 255, 0, 0.25)' // subtle glow
-                }}
-            >
-                <Clock size={11} strokeWidth={2.3} color="#62ff7d" />
-                <span>{minutes} min {formattedSeconds} sec</span>
+            <div className="flex items-center gap-4">
+                <IBMLogo className="w-[60px] h-[24px] shrink-0 text-[#777777] fill-current" />
+                <div
+                    className="flex items-center gap-1.5 cursor-pointer whitespace-nowrap shrink-0"
+                    style={{
+                        backgroundColor: '#033a15',          // darker green
+                        borderRadius: '20px',                // pill shape
+                        padding: '2px 8px',                  // slight increase horizontally
+                        fontSize: '11px',                    // smaller text
+                        color: '#62ff7d',                    // softer green text
+                        boxShadow: '0 0 6px rgba(0, 255, 0, 0.25)' // subtle glow
+                    }}
+                >
+                    <Clock size={11} strokeWidth={2.3} color="#62ff7d" />
+                    <span>{minutes} min {formattedSeconds} sec</span>
+                </div>
             </div>
 
             {/* Right Actions */}
