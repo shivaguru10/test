@@ -1,11 +1,32 @@
 "use client";
+import { useState, useEffect } from "react";
 import { useTheme } from "../context/ThemeContext";
 import { useTest } from "../context/TestContext";
-import { Layout, Sun, Moon, HelpCircle, Clock } from "lucide-react";
+import { Layout, Sun, Moon, HelpCircle, Clock, Wifi } from "lucide-react";
 
 export default function Header() {
     const { theme, toggleTheme } = useTheme();
     const { timeLeft } = useTest();
+
+    const [realTime, setRealTime] = useState("");
+
+    useEffect(() => {
+        const updateTime = () => {
+            const now = new Date();
+            let timeString = now.toLocaleTimeString('en-IN', {
+                timeZone: 'Asia/Kolkata',
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: true
+            });
+            // Remove AM/PM and trim any extra spaces
+            timeString = timeString.replace(/\s?(AM|PM|am|pm)/i, '').trim();
+            setRealTime(timeString);
+        };
+        updateTime();
+        const interval = setInterval(updateTime, 1000);
+        return () => clearInterval(interval);
+    }, []);
 
     const minutes = Math.floor(timeLeft / 60);
     const seconds = timeLeft % 60;
@@ -14,7 +35,7 @@ export default function Header() {
     const formattedSeconds = seconds < 10 ? `0${seconds}` : seconds;
 
     return (
-        <header className="flex items-center justify-between px-4 h-14 bg-white dark:bg-[#0d0d0d] border-b border-hr-border shrink-0">
+        <header className="flex items-center justify-between pl-4 pr-2 min-h-[60px] bg-white dark:bg-[#0d0d0d] border-b border-hr-border shrink-0 py-2">
             {/* Timer / Left Area */}
             <div
                 className="flex items-center gap-1.5 cursor-pointer"
@@ -46,9 +67,15 @@ export default function Header() {
                     <HelpCircle size={18} />
                 </button>
 
-                <button className="ml-2 bg-[var(--hr-text)] text-[var(--hr-bg)] border-none px-4 py-1.5 rounded text-sm font-semibold hover:opacity-90 transition-opacity">
-                    Save & Proceed
-                </button>
+                <div className="flex flex-col items-end gap-1.5 ml-2">
+                    {/* <div className="flex items-center gap-2 text-[13px] font-medium tracking-wide">
+                        <Wifi size={16} className="text-green-500" strokeWidth={2.5} title="Connection Stable" />
+                        <span className="text-hr-text-dimmed">{realTime || '--:--'}</span>
+                    </div> */}
+                    <button className="bg-[var(--hr-text)] text-[var(--hr-bg)] border-none px-4 py-1.5 rounded text-sm font-semibold hover:opacity-90 transition-opacity">
+                        Save & Proceed
+                    </button>
+                </div>
             </div>
         </header>
     );

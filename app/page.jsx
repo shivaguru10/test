@@ -1,6 +1,7 @@
 "use client";
 import React from "react";
 import Header from "../components/Header";
+import Helmet from "../components/Helmet";
 import Sidebar from "../components/Sidebar";
 import QuestionPanel from "../components/QuestionPanel";
 import EditorPanel from "../components/EditorPanel";
@@ -32,6 +33,7 @@ export default function Home() {
     // Actual Test UI
     return (
         <div className="flex flex-col h-screen w-full bg-white dark:bg-[#0f141e] text-[#39424e] dark:text-white overflow-hidden transition-colors">
+            <Helmet />
             <Header />
             <div className="flex flex-1 overflow-hidden relative">
                 <Sidebar

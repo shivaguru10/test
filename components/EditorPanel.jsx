@@ -20,13 +20,13 @@ export default function EditorPanel({ question }) {
             base: 'vs-dark',
             inherit: true,
             rules: [
-                { token: 'keyword', foreground: 'f92672' },          // import, class, public, static, void, int
+                { token: 'keyword', foreground: '#FF636F' },          // import, class, public, static, void, int
                 { token: 'type', foreground: '66d9ef' },             // Type declarations
                 { token: 'type.identifier', foreground: '66d9ef' },  // Result, Solution
                 { token: 'identifier', foreground: '60AFF0' },       // variable names
                 { token: 'comment', foreground: '7f848e', fontStyle: 'italic' }, // comments
                 { token: 'string', foreground: 'e6db74' },           // strings
-                { token: 'number', foreground: 'ae81ff' },           // numbers
+                { token: 'number', foreground: '#B5CEA8' },           // numbers
                 { token: 'operator', foreground: 'f92672' },         // Operators = {}[](), etc
                 { token: 'delimiter', foreground: '60AFF0' }         // Brackets {}, ()
             ],
@@ -111,7 +111,7 @@ export default function EditorPanel({ question }) {
                     onChange={(val) => updateEditorCode(question.id, val)}
                     onMount={handleEditorDidMount}
                     options={{
-                        minimap: { enabled: false },
+                        minimap: { enabled: true },
                         fontSize: 13,
                         fontFamily: "monospace",
                         lineHeight: 22,
