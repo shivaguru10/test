@@ -39,7 +39,7 @@ export default function Header() {
         <header className="flex items-center justify-between pl-4 pr-2 min-h-[60px] bg-white dark:bg-[#0d0d0d] border-b border-hr-border shrink-0 py-2">
             {/* Timer / Left Area */}
             <div className="flex items-center gap-4">
-                <IBMLogo className="w-[60px] h-[24px] shrink-0 text-[#777777] fill-current" />
+                <IBMLogo className="w-[60px] h-[24px] shrink-0 text-[#1E242E] dark:text-[#1E242E] fill-current" />
                 <div
                     className="flex items-center gap-1.5 cursor-pointer whitespace-nowrap shrink-0"
                     style={{
@@ -80,7 +80,7 @@ export default function Header() {
                         Save & Proceed
                     </button>
                 </div>
-            </div>
-        </header>
+            </div >
+        </header >
     );
 }

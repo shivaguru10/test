@@ -46,7 +46,7 @@ export default function EditorPanel({ question }) {
             }
         });
 
-        // Register custom java autocomplete snippets without needing a backend LSP
+        // Register custom java autocomplete snippets and advanced typing support
         monaco.languages.registerCompletionItemProvider('java', {
             provideCompletionItems: (model, position) => {
                 const suggestions = [
@@ -70,8 +70,63 @@ export default function EditorPanel({ question }) {
                         insertText: 'for (int i = 0; i < ${1:10}; i++) {\n\t${2}\n}',
                         insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
                         documentation: 'for loop'
+                    },
+                    {
+                        label: 'foreach',
+                        kind: monaco.languages.CompletionItemKind.Snippet,
+                        insertText: 'for (${1:Type} ${2:item} : ${3:collection}) {\n\t${4}\n}',
+                        insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+                        documentation: 'enhanced for loop'
                     }
                 ];
+
+                // Standard Java Keywords
+                const keywords = [
+                    'public', 'private', 'protected', 'static', 'final', 'void', 'int', 'double', 'boolean', 'char', 'float', 'long', 'short', 'byte',
+                    'String', 'class', 'interface', 'implements', 'extends', 'return', 'if', 'else', 'switch', 'case', 'break', 'continue', 'while',
+                    'do', 'try', 'catch', 'finally', 'throw', 'throws', 'new', 'this', 'super', 'null', 'true', 'false', 'import', 'package'
+                ];
+                keywords.forEach(kw => suggestions.push({ label: kw, kind: monaco.languages.CompletionItemKind.Keyword, insertText: kw }));
+
+                // Standard Java Classes & Interfaces
+                const classes = [
+                    'System', 'out', 'Math', 'String', 'Integer', 'Double', 'Boolean', 'Character', 'Object', 'Scanner', 'Arrays', 'Collections',
+                    'List', 'ArrayList', 'Map', 'HashMap', 'Set', 'HashSet', 'Queue', 'LinkedList', 'Stack', 'PriorityQueue', 'StringBuilder', 'StringBuffer'
+                ];
+                classes.forEach(cls => suggestions.push({ label: cls, kind: monaco.languages.CompletionItemKind.Class, insertText: cls }));
+
+                // Common Java Methods and Attributes
+                const methods = [
+                    'println', 'print', 'printf', 'length', 'size', 'charAt', 'substring', 'equals', 'equalsIgnoreCase', 'compareTo', 'contains',
+                    'indexOf', 'lastIndexOf', 'startsWith', 'endsWith', 'toLowerCase', 'toUpperCase', 'trim', 'split', 'replace', 'replaceAll', 'isEmpty',
+                    'add', 'remove', 'get', 'set', 'put', 'keySet', 'values', 'entrySet', 'containsKey', 'containsValue', 'clear', 'clone', 'sort',
+                    'binarySearch', 'copyOf', 'copyOfRange', 'fill', 'toString', 'hashCode', 'getClass', 'max', 'min', 'abs', 'pow', 'sqrt', 'round',
+                    'ceil', 'floor', 'random', 'append', 'reverse'
+                ];
+                methods.forEach(me => suggestions.push({
+                    label: me,
+                    kind: monaco.languages.CompletionItemKind.Method,
+                    insertText: me + '()',
+                    documentation: 'Common Java method or attribute'
+                }));
+
+                // Add word-based suggestions natively from the document so variables are caught
+                const textUntilPosition = model.getValueInRange({
+                    startLineNumber: 1, startColumn: 1,
+                    endLineNumber: position.lineNumber, endColumn: position.column
+                });
+                const words = textUntilPosition.match(/\b\w+\b/g) || [];
+                const uniqueWords = [...new Set(words)];
+                uniqueWords.forEach(word => {
+                    if (!keywords.includes(word) && !classes.includes(word) && !methods.includes(word)) {
+                        suggestions.push({
+                            label: word,
+                            kind: monaco.languages.CompletionItemKind.Text,
+                            insertText: word
+                        });
+                    }
+                });
+
                 return { suggestions: suggestions };
             }
         });
@@ -112,22 +167,31 @@ export default function EditorPanel({ question }) {
                     onMount={handleEditorDidMount}
                     options={{
                         minimap: { enabled: true },
-                        fontSize: 13,
-                        fontFamily: "monospace",
-                        lineHeight: 22,
+                        fontSize: 14,
+                        fontFamily: "'Consolas', 'Courier New', monospace",
+                        lineHeight: 21,
                         padding: { top: 16 },
-                        scrollBeyondLastLine: false,
+                        scrollBeyondLastLine: true,
                         smoothScrolling: true,
                         cursorBlinking: "smooth",
                         cursorSmoothCaretAnimation: "on",
                         formatOnPaste: true,
+                        formatOnType: true,
                         suggestOnTriggerCharacters: true,
                         acceptSuggestionOnEnter: "on",
                         quickSuggestionsDelay: 10,
                         renderLineHighlight: "all",
                         hideCursorInOverviewRuler: true,
                         overviewRulerBorder: false,
-                        matchBrackets: "near",
+                        matchBrackets: "always",
+                        autoClosingBrackets: "always",
+                        autoClosingQuotes: "always",
+                        autoIndent: "full",
+                        folding: true,
+                        showFoldingControls: "mouseover",
+                        mouseWheelZoom: true,
+                        multiCursorModifier: "alt",
+                        snippetSuggestions: "inline",
                         scrollbar: {
                             vertical: "visible",
                             horizontal: "visible",

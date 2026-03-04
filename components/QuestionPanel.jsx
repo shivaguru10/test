@@ -45,7 +45,7 @@ export default function QuestionPanel({ question }) {
                         style={{ marginLeft: rowIdx % 2 === 0 ? '0' : '-100px' }}
                     >
                         {Array.from({ length: 12 }).map((_, colIdx) => (
-                            <span key={colIdx} className="text-xl font-bold text-[#908F8F] shrink-0 whitespace-nowrap">
+                            <span key={colIdx} className="text-xl font-bold text-[#797979] shrink-0 whitespace-nowrap">
                                 HackerRank Confidential
                             </span>
                         ))}

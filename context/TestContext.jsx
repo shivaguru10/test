@@ -27,13 +27,16 @@ export function TestProvider({ children }) {
 
     // Load from localStorage on mount (client-side only to avoid hydration mismatch)
     useEffect(() => {
-        const savedTime = localStorage.getItem('hr_timeLeft');
+        // We ALWAYS start the timer from 59:59 on a fresh visit.
+        // If you still want to resume on refresh, we only restore if hasStarted is true.
         const savedCode = localStorage.getItem('hr_editorCodes');
         const savedQuestion = localStorage.getItem('hr_activeQuestionId');
         const savedMessage = localStorage.getItem('hr_messageContent');
         const savedStarted = localStorage.getItem('hr_hasStarted');
 
-        if (savedTime) setTimeLeft(parseInt(savedTime, 10));
+        // Start from 59:59 (3599 seconds)
+        setTimeLeft(3599);
+
         if (savedCode) setEditorCodes(JSON.parse(savedCode));
         if (savedQuestion) setActiveQuestionId(parseInt(savedQuestion, 10));
         if (savedMessage) setMessageContent(savedMessage);
@@ -81,8 +84,8 @@ export function TestProvider({ children }) {
         const initializeTest = async () => {
             try {
                 // Always try to spin up the camera for proctoring on page load.
-                const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
-                window.activeProctorStream = stream;
+                // const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+                // window.activeProctorStream = stream;
             } catch (err) {
                 console.warn("Camera access denied or unavailable, proceeding to test anyway.");
             } finally {

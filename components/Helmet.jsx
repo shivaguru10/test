@@ -24,7 +24,7 @@ export default function Helmet() {
 
     return (
         <div
-            className="w-full bg-[#f8f9fa] dark:bg-[#000000] flex items-center justify-end px-2 shrink-0 border-b border-gray-200 dark:border-[#2a323d] transition-colors overflow-visible"
+            className="w-full bg-[#555555] dark:bg-[#0F141E] flex items-center justify-end px-2 shrink-0 border-b border-gray-200 dark:border-[#2a323d] transition-colors overflow-visible"
             style={{ height: '30px' }}
         >
             <div className="flex items-center gap-4 text-[20px] font-medium">
