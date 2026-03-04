@@ -1,5 +1,5 @@
 "use client";
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import Editor from "@monaco-editor/react";
 import { useTheme } from "../context/ThemeContext";
 import { useTest } from "../context/TestContext";
@@ -10,9 +10,15 @@ export default function EditorPanel({ question }) {
     const { theme } = useTheme();
     const { editorCodes, updateEditorCode } = useTest();
     const editorRef = useRef(null);
+    const [cursorPos, setCursorPos] = useState({ line: 1, col: 1 });
 
     function handleEditorDidMount(editor, monaco) {
         editorRef.current = editor;
+
+        // Listen to cursor position changes
+        editor.onDidChangeCursorPosition((e) => {
+            setCursorPos({ line: e.position.lineNumber, col: e.position.column });
+        });
     }
 
     function handleEditorBeforeMount(monaco) {
@@ -130,6 +136,70 @@ export default function EditorPanel({ question }) {
                 return { suggestions: suggestions };
             }
         });
+
+        // Setup Custom Folding for Java (Imports + Braces + Comments)
+        monaco.languages.registerFoldingRangeProvider('java', {
+            provideFoldingRanges: (model, context, token) => {
+                const ranges = [];
+                let importStart = -1;
+                let importEnd = -1;
+                const bracketStack = [];
+                let commentStart = -1;
+
+                const lineCount = model.getLineCount();
+                for (let i = 1; i <= lineCount; i++) {
+                    const lineContent = model.getLineContent(i);
+                    const trimLine = lineContent.trim();
+
+                    // 1. Imports
+                    if (trimLine.startsWith('import ')) {
+                        if (importStart === -1) importStart = i;
+                        importEnd = i;
+                    } else if (trimLine !== '' && importStart !== -1) {
+                        if (importEnd > importStart) {
+                            ranges.push({ start: importStart, end: importEnd, kind: monaco.languages.FoldingRangeKind.Imports });
+                        }
+                        importStart = -1;
+                    }
+
+                    // 2. Multi-line comments
+                    if (trimLine.startsWith('/*')) {
+                        commentStart = i;
+                    }
+                    if (trimLine.includes('*/') && commentStart !== -1) {
+                        if (i > commentStart) {
+                            ranges.push({ start: commentStart, end: i, kind: monaco.languages.FoldingRangeKind.Comment });
+                        }
+                        commentStart = -1;
+                    }
+
+                    // 3. Brackets
+                    let cleanLine = lineContent;
+                    let inlineCommentIdx = cleanLine.indexOf('//');
+                    if (inlineCommentIdx !== -1) cleanLine = cleanLine.substring(0, inlineCommentIdx);
+
+                    for (let c = 0; c < cleanLine.length; c++) {
+                        if (cleanLine[c] === '{') bracketStack.push(i);
+                        if (cleanLine[c] === '}') {
+                            if (bracketStack.length > 0) {
+                                const start = bracketStack.pop();
+                                // fold if brackets span multiple lines
+                                if (start < i) {
+                                    ranges.push({ start: start, end: i - 1, kind: monaco.languages.FoldingRangeKind.Region });
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // Catch any trailing imports at End of File
+                if (importStart !== -1 && importEnd > importStart) {
+                    ranges.push({ start: importStart, end: importEnd, kind: monaco.languages.FoldingRangeKind.Imports });
+                }
+
+                return ranges;
+            }
+        });
     }
 
     return (
@@ -166,7 +236,7 @@ export default function EditorPanel({ question }) {
                     onChange={(val) => updateEditorCode(question.id, val)}
                     onMount={handleEditorDidMount}
                     options={{
-                        minimap: { enabled: true },
+                        minimap: { enabled: false },
                         fontSize: 14,
                         fontFamily: "'Consolas', 'Courier New', monospace",
                         lineHeight: 21,
@@ -204,7 +274,7 @@ export default function EditorPanel({ question }) {
 
             {/* Editor Status Bar (above footer) */}
             <div className="h-8 border-t border-gray-200 dark:border-[#2a323d] flex items-center justify-end px-4 text-xs text-gray-500 dark:text-gray-400 gap-6 shrink-0 bg-white dark:bg-[#1a1a1a]">
-                <span>Ln 24, Col 5</span>
+                <span>Ln {cursorPos.line}, Col {cursorPos.col}</span>
                 <span className="flex items-center gap-1.5 text-[#00ea64]"><div className="w-1.5 h-1.5 rounded-full bg-[#00ea64]"></div> Autocomplete</span>
                 <span>Spaces: 4</span>
                 <span>Mode: Normal</span>
